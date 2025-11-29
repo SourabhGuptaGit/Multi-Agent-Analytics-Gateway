@@ -1,0 +1,14 @@
+duckdb
+pandas
+langchain
+langchain-community
+langgraph
+openai
+sentence-transformers
+sqlparse
+faiss-cpu
+gradio
+
+# pyarrow # not able to install
+# chromadb # not able to install
+# streamlit # not able to install
