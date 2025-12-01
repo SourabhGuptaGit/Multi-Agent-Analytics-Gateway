@@ -8,6 +8,10 @@ sentence-transformers
 sqlparse
 faiss-cpu
 gradio
+google-generativeai
+tabulate
+fastapi
+uvicorn[standard]
 
 # pyarrow # not able to install
 # chromadb # not able to install
