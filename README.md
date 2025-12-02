@@ -155,14 +155,16 @@ Frontend for interactive querying.
 
 ### **1. Clone Repo**
 ```
-git clone <your-repo-url>
+mkdir MAAG
 cd MAAG
+git clone https://github.com/SourabhGuptaGit/Multi-Agent-Analytics-Gateway.git .
 ```
 
 ### **2. Create environment**
 ```
 uv venv
-source .venv/Scripts/activate  # Windows
+.\.venv\Scripts\activate  # Windows
+source ./.venv/bin/activate  # Linux/Mac
 ```
 
 ### **3. Install dependencies**

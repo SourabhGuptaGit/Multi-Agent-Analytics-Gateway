@@ -17,11 +17,10 @@ def _select_llm_client():
         from openai import OpenAI
         return OpenAI(api_key=settings.OPENAI_API_KEY)
 
-    # elif provider == "gemini":
-    #     # Using Google Generative AI client
-    #     from google import generativeai as genai
-    #     genai.configure(api_key=settings.GEMINI_API_KEY)
-    #     return genai
+    elif provider == "gemini":
+        from google import generativeai as genai
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        return genai
 
     else:
         raise ValueError(f"Unsupported LLM provider: {settings.LLM_PROVIDER}")
