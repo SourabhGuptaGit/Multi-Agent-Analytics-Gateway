@@ -23,11 +23,10 @@ import uuid
 import time
 from datetime import datetime
 from io import StringIO
+from core.config import settings
 
-# -----------------------
-# CONFIG: change if needed
-# -----------------------
-API_BASE = "http://localhost:8000"      # backend base (FastAPI)
+
+API_BASE = "http://localhost:8000"
 API_ASK = f"{API_BASE}/api/ask"
 API_SQL = f"{API_BASE}/api/sql"
 API_HEALTH = f"{API_BASE}/api/health"
@@ -251,5 +250,7 @@ with gr.Blocks(title="MAAG — Chat UI") as demo:
 
 # Launch the UI
 if __name__ == "__main__":
-    # demo.queue(concurrency_count=4)
-    demo.launch(server_name="0.0.0.0", server_port=7860, share=False)
+    
+    GRADIO_HOST = settings.GRADIO_HOST
+    GRADIO_PORT = int(settings.GRADIO_PORT) if settings.GRADIO_PORT.isdigit() else 7860
+    demo.launch(server_name=GRADIO_HOST, server_port=GRADIO_PORT, share=False)

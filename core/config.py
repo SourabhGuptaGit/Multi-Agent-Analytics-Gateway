@@ -27,32 +27,27 @@ class Settings:
     # -----------------------
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-    
     # Future support (local LLM)
     OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
     # -----------------------
-    # DEFAULT LLM PROVIDER
+    # LLM - MODELS
     # -----------------------
-    # LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini")  
-    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai")  
+    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini")  
+    # LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai")  
     # Can be: openai | gemini | ollama
-
-    # -----------------------
-    # MODELS
-    # -----------------------
     OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
     OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
     LLM_MODEL_NAME = os.getenv("OPENAI_MODEL") or os.getenv("GEMINI_MODEL") or os.getenv("OLLAMA_MODEL")
     LLM_TEMPERATURE = os.getenv("LLM_TEMPERATURE", 0.3)
     
-    # in Settings
+    # Token limits
     LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", 1024))   # default safe value
     LLM_HARD_TOKEN_CAP = int(os.getenv("LLM_HARD_TOKEN_CAP", 2048))  # absolute ceiling
     
     if not LLM_MODEL_NAME:
-        LLM_MODEL_NAME = OPENAI_MODEL
+        LLM_MODEL_NAME = GEMINI_MODEL
     
     # -----------------------
     # FAISS VECTOR SETTINGS
@@ -82,7 +77,18 @@ class Settings:
     # SQL EXECUTOR SETTINGS
     # -----------------------
     MAX_RESULT_ROWS = int(os.getenv("MAX_RESULT_ROWS", 100))
+    
+    # -----------------------
+    # FastAPI SETTINGS
+    # -----------------------
+    FASTAPI_HOST = int(os.getenv("FASTAPI_HOST", "0.0.0.0"))
+    FASTAPI_PORT = int(os.getenv("FASTAPI_PORT", "8000"))
+    
+    # -----------------------
+    # Gradio SETTINGS
+    # -----------------------
+    GRADIO_HOST = int(os.getenv("GRADIO_HOST", "0.0.0.0"))
+    GRADIO_PORT = int(os.getenv("GRADIO_PORT", "7860"))
 
 
-# Create a global settings instance to import anywhere
 settings = Settings()
