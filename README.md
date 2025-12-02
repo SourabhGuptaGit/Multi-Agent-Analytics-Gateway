@@ -357,7 +357,7 @@ Designed & implemented as part of an advanced agentic analytics assignment using
 
 ## 🖥️ 15. Technical Documentation & Presentation
 
-[View Full MAAG Technical Architecture Presentation (PDF)](./MAAG_Docs/MAAG.pptx)
+[View Full MAAG Technical Architecture Presentation (PPT)](./MAAG_Docs/MAAG.pptx)
 
 
 ---
