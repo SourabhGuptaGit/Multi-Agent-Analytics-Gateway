@@ -1,30 +1,44 @@
 version: "3.8"
+
 services:
   api:
     build: .
-    container_name: blend360_api
+    image: maag-api:latest
+    container_name: maag_api
+    command: ["python", "api/server.py"]
     ports:
       - "8000:8000"
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
+    env_file:
+      - .env
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - LLM_PROVIDER=${LLM_PROVIDER:-openai}
       - LLM_MAX_TOKENS=${LLM_MAX_TOKENS:-1024}
       - MAX_RESULT_ROWS=${MAX_RESULT_ROWS:-1000}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   gradio:
     build: .
-    container_name: blend360_ui
+    image: maag-ui:latest
+    container_name: maag_ui
     command: ["python", "ui/app.py"]
     ports:
       - "7860:7860"
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
+    env_file:
+      - .env
     environment:
       - API_URL=http://api:8000/ask
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    restart: unless-stopped

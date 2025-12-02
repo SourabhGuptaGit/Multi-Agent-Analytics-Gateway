@@ -355,5 +355,37 @@ Designed & implemented as part of an advanced agentic analytics assignment using
 
 ---
 
+## 🖥️ 15. Technical Documentation & Presentation
+
+[View Full MAAG Technical Architecture Presentation (PDF)](./MAAG_Docs/MAAG.pptx)
+
+
+---
+
+## 📹 16. FastAPI and Gradio UI ⚙️
+
+The system flows from the Gradio UI/FastAPI layer down through the agent pipeline and DuckDB executor.
+
+<p align="center">
+  <img src="./MAAG_Docs/server_docs.png" alt="MAAG High-Level Architecture Diagram" width="700">
+  <br>
+  <i>FastAPI API's to access MAAG.</i>
+</p>
+
+<p align="center">
+  <img src="./MAAG_Docs/UI-top.png" alt="MAAG High-Level Architecture Diagram" width="700">
+  <br>
+  <i>Gradio UI to access MAAG.</i>
+</p>
+
+<p align="center">
+  <img src="./MAAG_Docs/UI-Bottom.png" alt="MAAG High-Level Architecture Diagram" width="700">
+  <br>
+  <i>Gradio UI to access MAAG.</i>
+</p>
+
+
+---
+
 # 🚀 MAAG is now ready for production-grade evaluation!
 

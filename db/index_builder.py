@@ -79,7 +79,7 @@ def _make_docs_from_metadata(metadata: Dict) -> List[Tuple[str, Dict]]:
 
 
 @safe_execute
-@timed
+# @timed
 def build_faiss_index(metadata_dir: str = None, index_path: str = None, overwrite: bool = False):
     """
     Build FAISS index from metadata JSON files.
