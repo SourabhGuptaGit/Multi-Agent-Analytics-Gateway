@@ -1,66 +1,80 @@
+import argparse
+import os
+from core.utils import logger
 from ingestion.loader import load_csv
 from ingestion.converter import csv_to_parquet
 from db.duckdb_client import DuckDBClient
 from db.metadata_store import extract_metadata
 from db.index_builder import build_faiss_index
 from core.config import settings
-import os
 
-def run_ingestion():
-    # 1. Path to CSV
-    cloud_warehouse_csv_path = os.path.join(settings.DATA_RAW, "Cloud Warehouse Compersion Chart.csv")
-    international_sales_csv_path = os.path.join(settings.DATA_RAW, "International sale Report.csv")
 
-    # 2. Load CSV (simple load since it's small)
-    # df = load_csv(cloud_warehouse_csv_path)
+def ingest_data():
+    logger.info("Starting ingestion pipeline...")
 
-    # 3. Convert to Parquet
-    cloud_warehouse_parquet_path = csv_to_parquet(cloud_warehouse_csv_path, "cloud_warehouse.parquet")
-    international_sales_parquet_path = csv_to_parquet(international_sales_csv_path, "international_sales.parquet")
+    raw_dir = settings.DATA_RAW
+    files = [f for f in os.listdir(raw_dir) if f.endswith(".csv")]
 
-    # 4. Register table in DuckDB
+    if not files:
+        logger.error("No CSV files found in data/raw/. Add files and retry.")
+        return
+
     db = DuckDBClient()
-    db.register_parquet("cloud_warehouse", cloud_warehouse_parquet_path)
-    db.register_parquet("international_sales", international_sales_parquet_path)
 
-    # 5. Extract metadata
-    extract_metadata("cloud_warehouse")
-    extract_metadata("international_sales")
-    
-    build_result = build_faiss_index()
-    print("Build result:", build_result)
+    parquet_paths = []
 
-def test():
-    """
-    Extract table names from SQL using simple regex for FROM and JOIN.
-    Returns a list (possibly with duplicates).
-    """
-    
-    import re
-    sql: str = """
-    SELECT first_name, last_name, email
-    FROM customers;
-    """
-    tables = []
-    # capture FROM <table> and JOIN <table>
-    from_matches = re.findall(r'\bFROM\s+([A-Za-z0-9_\."]+)', sql, flags=re.I)
-    join_matches = re.findall(r'\bJOIN\s+([A-Za-z0-9_\."]+)', sql, flags=re.I)
-    col_matches = re.findall(r'([A-Za-z0-9_]+)\.([A-Za-z0-9_]+)', sql)
-    tables.extend(from_matches)
-    tables.extend(join_matches)
-    print(col_matches)
-    # clean table names (remove quotes/schema)
-    cleaned = []
-    for t in tables:
-        t = t.strip().strip('"')
-        # if schema.table, take last part
-        if "." in t:
-            t = t.split(".")[-1]
-        cleaned.append(t)
-    print(cleaned)
-    return list(dict.fromkeys(cleaned))
+    # 1. Convert CSV → Parquet + register into DB
+    for file in files:
+        csv_path = os.path.join(raw_dir, file)
+
+        table_name = (
+            file.replace(".csv", "")
+                .replace(" ", "_")
+                .replace("-", "_")
+                .lower()
+        )
+
+        logger.info(f"Processing CSV → Parquet for table: {table_name}")
+
+        parquet_path = csv_to_parquet(csv_path, f"{table_name}.parquet")
+        parquet_paths.append((table_name, parquet_path))
+
+        db.register_parquet(table_name, parquet_path)
+
+    # 2. Extract metadata JSON for each table
+    for table_name, _ in parquet_paths:
+        extract_metadata(table_name)
+
+    logger.success("Ingestion + metadata extraction completed.")
+
+
+def rebuild_faiss():
+    logger.info("Rebuilding FAISS vector index...")
+    build_faiss_index()
+    logger.success("FAISS index created successfully.")
+
 
 if __name__ == "__main__":
-    output = run_ingestion()
-    print(output)
-    
+    """
+    main.py — Data Ingestion + Metadata Extraction + FAISS Index Builder
+
+    Run:
+        python main.py ingest
+        python main.py rebuild
+    """
+
+    parser = argparse.ArgumentParser(description="Multi-Agent Analytics Gateway (MAAG) Pipeline Utility")
+
+    parser.add_argument(
+        "action",
+        choices=["ingest", "rebuild"],
+        help="Choose pipeline action: ingest → load CSVs, rebuild → rebuild FAISS index",
+    )
+
+    args = parser.parse_args()
+
+    if args.action == "ingest":
+        ingest_data()
+
+    elif args.action == "rebuild":
+        rebuild_faiss()

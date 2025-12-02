@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    container_name: blend360_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - LLM_MAX_TOKENS=${LLM_MAX_TOKENS:-1024}
+      - MAX_RESULT_ROWS=${MAX_RESULT_ROWS:-1000}
+  gradio:
+    build: .
+    container_name: blend360_ui
+    command: ["python", "ui/app.py"]
+    ports:
+      - "7860:7860"
+    depends_on:
+      - api
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - API_URL=http://api:8000/ask
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
